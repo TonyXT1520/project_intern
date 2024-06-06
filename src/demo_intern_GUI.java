@@ -84,7 +84,6 @@ public class demo_intern_GUI {
     private void updateStudent(){
         StudentInfo studentInfo = new StudentInfo();
 
-
         studentInfo.setFullName(txtFullName.getText());
         studentInfo.setDayofBirth(txtDate.getText());
         studentInfo.setGender(txtGender.getText());
