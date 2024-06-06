@@ -1,0 +1,431 @@
+Index: src/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import model.StudentInfo;\r\nimport service.StudentService;\r\nimport java.util.List;\r\n\r\n//TIP To <b>Run</b> code, press <shortcut actionId=\"Run\"/> or\r\n// click the <icon src=\"AllIcons.Actions.Execute\"/> icon in the gutter.\r\npublic class Main {\r\n    public static void main(String[] args) {\r\n\r\n        StudentService studentService = new StudentService();\r\n\r\n        List<StudentInfo> studentInfoList = studentService.getAllStudents();\r\n        for (StudentInfo studentInfo: studentInfoList){\r\n            System.out.println(\"ID: \" + studentInfo.getStudentId());\r\n            System.out.println(\"FullName: \" + studentInfo.getFullName());\r\n            System.out.println(\"Date Of Birth: \" + studentInfo.getDayofBirth());\r\n            System.out.println(\"Gender: \" + studentInfo.getGender());\r\n            System.out.println(\"Address: \" + studentInfo.getAddress());\r\n            System.out.println(\"Phone: \" + studentInfo.getPhone());\r\n            System.out.println(\"Email: \" + studentInfo.getEmail());\r\n            System.out.println();\r\n        }\r\n\r\n        StudentInfo updateStudent = new StudentInfo();\r\n\r\n        updateStudent.setFullName(\"T\");\r\n        updateStudent.setDayofBirth(\"2006-06-07\");\r\n        updateStudent.setGender(\"Male\");\r\n        updateStudent.setAddress(\"HaNoi\");\r\n        updateStudent.setPhone(\"09353432\");\r\n        updateStudent.setEmail(\"T@gmail.com\");\r\n        updateStudent.setStudentId(1);\r\n\r\n        studentService.updateStudent(updateStudent);\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Main.java b/src/Main.java
+--- a/src/Main.java	(revision 57b1c1610d36d85f6b193c5c3f38dc730d0d4a6e)
++++ b/src/Main.java	(date 1717642189175)
+@@ -1,6 +1,7 @@
+ import model.StudentInfo;
+ import service.StudentService;
+ import java.util.List;
++import java.util.Scanner;
+ 
+ //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+ // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+@@ -8,6 +9,7 @@
+     public static void main(String[] args) {
+ 
+         StudentService studentService = new StudentService();
++        StudentInfo searchStudent = new StudentInfo();
+ 
+         List<StudentInfo> studentInfoList = studentService.getAllStudents();
+         for (StudentInfo studentInfo: studentInfoList){
+@@ -23,15 +25,53 @@
+ 
+         StudentInfo updateStudent = new StudentInfo();
+ 
+-        updateStudent.setFullName("T");
++        /*updateStudent.setFullName("T");
+         updateStudent.setDayofBirth("2006-06-07");
+         updateStudent.setGender("Male");
+         updateStudent.setAddress("HaNoi");
+         updateStudent.setPhone("09353432");
+         updateStudent.setEmail("T@gmail.com");
+-        updateStudent.setStudentId(1);
++        updateStudent.setStudentId(1);*/
++
++        //studentService.updateStudent(updateStudent);
++
++        StudentInfo deleteStudent = new StudentInfo();
++
++        Scanner input = new Scanner(System.in);
++        System.out.println("1. add student");
++        System.out.println("2. update student");
++        System.out.println("3. delete student");
++        System.out.println("4. search student");
++        System.out.print("enter the number below to execute: ");
++        int in = input.nextInt();
++
++
++        switch (in){
++            case 1:
++                System.out.print("choose id you want to add: ");
++                break;
++            case 2:
++                System.out.print("choose id you want to update: ");
++                break;
++            case 3:
++                System.out.print("choose id you want to delete: ");
++                break;
++            case 4:
++                System.out.print("enter number student_id you want to find: ");
++                int studentId = input.nextInt();
++
++                    System.out.println("Student_id: " + searchStudent.getStudentId());
++                    System.out.println("Full Name: " + searchStudent.getFullName());
++                    System.out.println("Day of Birth: " + searchStudent.getDayofBirth());
++                    System.out.println("Gender: " + searchStudent.getGender());
++                    System.out.println("Address: " + searchStudent.getAddress());
++                    System.out.println("Phone number: " + searchStudent.getPhone());
++                    System.out.println("Email: " + searchStudent.getEmail());
++                    break;
++
+ 
+-        studentService.updateStudent(updateStudent);
++        }
++
+ 
+     }
+ }
+\ No newline at end of file
+Index: src/dao/DataImplement.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package dao;\r\n\r\nimport config.DataSource;\r\nimport model.StudentInfo;\r\n\r\nimport java.sql.*;\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\npublic class DataImplement extends DataClose {\r\n\r\n    public  List<StudentInfo> getAllStudents(){\r\n        List<StudentInfo> studentInfos = new ArrayList<>();\r\n\r\n\r\n        Connection connection = null;\r\n        PreparedStatement preparedStatement = null;\r\n        ResultSet resultSet = null;\r\n\r\n        try{\r\n            String query = \"SELECT * FROM student\";\r\n            connection = DataSource.createConnection();\r\n            preparedStatement = connection.prepareStatement(query);\r\n            resultSet = preparedStatement.executeQuery();\r\n\r\n            while(resultSet.next()){\r\n                StudentInfo studentInfo = new StudentInfo();\r\n                studentInfo.setStudentId(resultSet.getInt(\"student_id\"));\r\n                studentInfo.setFullName(resultSet.getString(\"full_name\"));\r\n                studentInfo.setDayofBirth(resultSet.getDate(\"date_of_birth\").toString());\r\n                studentInfo.setGender(resultSet.getString(\"gender\"));\r\n                studentInfo.setAddress(resultSet.getString(\"address\"));\r\n                studentInfo.setPhone(resultSet.getString(\"phone\"));\r\n                studentInfo.setEmail(resultSet.getString(\"email\"));\r\n\r\n                studentInfos.add(studentInfo);\r\n            }\r\n        }catch (SQLException e) {\r\n            e.printStackTrace();\r\n        }finally {\r\n            closeCon(connection);\r\n            closePst(preparedStatement);\r\n            closeRs(resultSet);\r\n        }\r\n        return studentInfos;\r\n    }\r\n\r\n    public static void addStudent(StudentInfo studentInfo){\r\n\r\n        Connection connection = null;\r\n        PreparedStatement preparedStatement = null;\r\n        ResultSet resultSet = null;\r\n\r\n        try {\r\n            String addStudent = \"INSERT INTO student (full_name, date_of_birth, gender, address, phone, email) VALUES (?, ?, ?, ?, ?, ?)\";\r\n            connection = DataSource.createConnection();\r\n            preparedStatement = connection.prepareStatement(addStudent);\r\n\r\n\r\n            preparedStatement.setString(1, studentInfo.getFullName());\r\n            preparedStatement.setDate(2, java.sql.Date.valueOf(studentInfo.getDayofBirth()));\r\n            preparedStatement.setString(3, studentInfo.getGender());\r\n            preparedStatement.setString(4, studentInfo.getAddress());\r\n            preparedStatement.setString(5, studentInfo.getPhone());\r\n            preparedStatement.setString(6, studentInfo.getEmail());\r\n\r\n            int rowsInserted = preparedStatement.executeUpdate();\r\n            if (rowsInserted > 0){\r\n                System.out.println(\"A new student was inserted successfully!\");\r\n            }\r\n        }\r\n        catch(SQLException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    public void deleteStudent(int studentId){\r\n        Connection connection = null;\r\n        PreparedStatement preparedStatement = null;\r\n        ResultSet resultSet = null;\r\n\r\n        try{\r\n            String deleteStudent = \"DELETE FROM student WHERE student_id = ?\";\r\n            connection = DataSource.createConnection();\r\n            preparedStatement = connection.prepareStatement(deleteStudent);\r\n\r\n\r\n            preparedStatement.setInt(1, studentId);\r\n            preparedStatement.executeUpdate();\r\n\r\n            int rowsInserted = preparedStatement.executeUpdate();\r\n            if (rowsInserted > 0){\r\n                System.out.println(\"A student deleted successfully!\");\r\n            }\r\n        }catch (SQLException e) {\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n    public static void updateStudent(StudentInfo studentInfo){\r\n        Connection connection = null;\r\n        PreparedStatement preparedStatement = null;\r\n        ResultSet resultSet = null;\r\n\r\n        try{\r\n            String updateStudent = \"UPDATE student SET full_name = ?, date_of_birth = ?, gender = ?, address = ?, phone = ?, email = ? WHERE student_id = ?\";\r\n\r\n            connection = DataSource.createConnection();\r\n            preparedStatement = connection.prepareStatement(updateStudent);\r\n\r\n            preparedStatement.setString(1,studentInfo.getFullName());\r\n            preparedStatement.setDate(2, java.sql.Date.valueOf(studentInfo.getDayofBirth()));\r\n            preparedStatement.setString(3, studentInfo.getGender());\r\n            preparedStatement.setString(4, studentInfo.getAddress());\r\n            preparedStatement.setString(5, studentInfo.getPhone());\r\n            preparedStatement.setString(6, studentInfo.getEmail());\r\n            preparedStatement.setInt(7, studentInfo.getStudentId());\r\n\r\n            int rowsUpdate = preparedStatement.executeUpdate();\r\n            if (rowsUpdate > 0) {\r\n                System.out.println(\"A student update successfully\");\r\n            }\r\n        }catch (SQLException e){\r\n            e.printStackTrace();\r\n        }\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/dao/DataImplement.java b/src/dao/DataImplement.java
+--- a/src/dao/DataImplement.java	(revision 57b1c1610d36d85f6b193c5c3f38dc730d0d4a6e)
++++ b/src/dao/DataImplement.java	(date 1717641908905)
+@@ -12,7 +12,6 @@
+     public  List<StudentInfo> getAllStudents(){
+         List<StudentInfo> studentInfos = new ArrayList<>();
+ 
+-
+         Connection connection = null;
+         PreparedStatement preparedStatement = null;
+         ResultSet resultSet = null;
+@@ -38,7 +37,7 @@
+         }catch (SQLException e) {
+             e.printStackTrace();
+         }finally {
+-            closeCon(connection);
++            //closeCon(connection);
+             closePst(preparedStatement);
+             closeRs(resultSet);
+         }
+@@ -71,7 +70,21 @@
+         }
+         catch(SQLException e) {
+             e.printStackTrace();
++        }try{
++            if (connection != null){
++                connection.close();
++            }
++            if(preparedStatement != null){
++                preparedStatement.close();
++            }
++            if(resultSet != null){
++                resultSet.close();
++            }
++
++        }catch (SQLException e){
++            e.printStackTrace();
+         }
++
+     }
+ 
+     public void deleteStudent(int studentId){
+@@ -94,6 +107,10 @@
+             }
+         }catch (SQLException e) {
+             e.printStackTrace();
++        }finally {
++            closeCon(connection);
++            closePst(preparedStatement);
++            closeRs(resultSet);
+         }
+     }
+ 
+@@ -120,9 +137,23 @@
+             if (rowsUpdate > 0) {
+                 System.out.println("A student update successfully");
+             }
++        }catch (SQLException e){
++            e.printStackTrace();
++        }try{
++            if (connection != null){
++                connection.close();
++            }
++            if(preparedStatement != null){
++                preparedStatement.close();
++            }
++            if(resultSet != null){
++                resultSet.close();
++            }
++
+         }catch (SQLException e){
+             e.printStackTrace();
+         }
++
+     }
+ 
+ }
+Index: src/demo_intern_GUI.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import model.StudentInfo;\r\nimport service.StudentService;\r\n\r\nimport javax.swing.*;\r\nimport javax.swing.table.DefaultTableModel;\r\nimport java.awt.event.ActionEvent;\r\nimport java.awt.event.ActionListener;\r\nimport java.util.List;\r\n\r\npublic class demo_intern_GUI {\r\n    private JPanel main;\r\n    private JLabel title;\r\n    private JTextField txtStudentId;\r\n    private JTextField txtFullName;\r\n    private JTextField txtDate;\r\n    private JTextField txtGender;\r\n    private JTextField txtAddress;\r\n    private JTextField txtPhone;\r\n    private JTextField txtEmail;\r\n    private JButton saveButton;\r\n    private JTable table1;\r\n    private JButton updateButton;\r\n    private JButton deleteButton;\r\n    private JButton searchButton;\r\n    private JTextField txtsearch;\r\n\r\n    private StudentService studentService;\r\n\r\n    public static void main(String[] args) {\r\n        JFrame frame = new JFrame(\"demo_intern_GUI\");\r\n        frame.setContentPane(new demo_intern_GUI().main);\r\n        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);\r\n        frame.pack();\r\n        frame.setVisible(true);\r\n    }\r\n\r\n    public demo_intern_GUI() {\r\n        studentService = new StudentService();\r\n        loadStudentTable();\r\n\r\n        saveButton.addActionListener(new ActionListener() {\r\n            @Override\r\n            public void actionPerformed(ActionEvent e) {\r\n                addstudent();\r\n                loadStudentTable();\r\n            }\r\n        });\r\n        updateButton.addActionListener(new ActionListener() {\r\n            @Override\r\n            public void actionPerformed(ActionEvent e) {\r\n                updateStudent();\r\n                loadStudentTable();\r\n            }\r\n        });\r\n        deleteButton.addActionListener(new ActionListener() {\r\n            @Override\r\n            public void actionPerformed(ActionEvent e) {\r\n                deleteStudent();\r\n                loadStudentTable();\r\n            }\r\n        });\r\n        searchButton.addActionListener(new ActionListener() {\r\n            @Override\r\n            public void actionPerformed(ActionEvent e) {\r\n                searchStudent();\r\n\r\n            }\r\n        });\r\n    }\r\n\r\n    private void addstudent(){\r\n        StudentInfo studentInfo = new StudentInfo();\r\n\r\n        studentInfo.setFullName(txtFullName.getText());\r\n        studentInfo.setDayofBirth(txtDate.getText());\r\n        studentInfo.setGender(txtGender.getText());\r\n        studentInfo.setAddress(txtAddress.getText());\r\n        studentInfo.setPhone(txtPhone.getText());\r\n        studentInfo.setEmail(txtEmail.getText());\r\n\r\n        studentService.addStudent(studentInfo);\r\n    }\r\n\r\n    private void updateStudent(){\r\n        StudentInfo studentInfo = new StudentInfo();\r\n\r\n\r\n        studentInfo.setFullName(txtFullName.getText());\r\n        studentInfo.setDayofBirth(txtDate.getText());\r\n        studentInfo.setGender(txtGender.getText());\r\n        studentInfo.setAddress(txtAddress.getText());\r\n        studentInfo.setPhone(txtPhone.getText());\r\n        studentInfo.setEmail(txtEmail.getText());\r\n        studentInfo.setStudentId(Integer.parseInt(txtStudentId.getText()));\r\n\r\n        studentService.updateStudent(studentInfo);\r\n    }\r\n\r\n    private void deleteStudent(){\r\n        int studentId = Integer.parseInt(txtsearch.getText());\r\n        studentService.deleteStudent(studentId);\r\n    }\r\n\r\n    private void searchStudent(){\r\n        int studentId = Integer.parseInt(txtsearch.getText());\r\n\r\n        List<StudentInfo> studentInfos = studentService.getAllStudents();\r\n        for(StudentInfo studentInfo : studentInfos){\r\n            if(studentInfo.getStudentId() == studentId){\r\n                txtStudentId.setText(String.valueOf(studentInfo.getStudentId()));\r\n                txtFullName.setText(studentInfo.getFullName());\r\n                txtDate.setText(studentInfo.getDayofBirth());\r\n                txtGender.setText(studentInfo.getGender());\r\n                txtAddress.setText(studentInfo.getAddress());\r\n                txtPhone.setText(studentInfo.getPhone());\r\n                txtEmail.setText(studentInfo.getEmail());\r\n                break;\r\n            }\r\n        }\r\n    }\r\n\r\n    private void loadStudentTable(){\r\n        List<StudentInfo> studentInfos = studentService.getAllStudents();\r\n        String[] columnNames = {\"ID\", \"Full Name\", \"Date of Birth\", \"Gender\", \"Address\", \"Phone\", \"Email\"};\r\n        DefaultTableModel model = new DefaultTableModel(columnNames, 0);\r\n\r\n        for (StudentInfo studentInfo: studentInfos){\r\n            Object[] row = new Object[]{\r\n                    studentInfo.getStudentId(),\r\n                    studentInfo.getFullName(),\r\n                    studentInfo.getDayofBirth(),\r\n                    studentInfo.getGender(),\r\n                    studentInfo.getAddress(),\r\n                    studentInfo.getPhone(),\r\n                    studentInfo.getEmail()\r\n            };\r\n            model.addRow(row);\r\n        }\r\n        table1.setModel(model);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/demo_intern_GUI.java b/src/demo_intern_GUI.java
+--- a/src/demo_intern_GUI.java	(revision 57b1c1610d36d85f6b193c5c3f38dc730d0d4a6e)
++++ b/src/demo_intern_GUI.java	(date 1717644844345)
+@@ -63,7 +63,7 @@
+             @Override
+             public void actionPerformed(ActionEvent e) {
+                 searchStudent();
+-
++                loadStudentTable();
+             }
+         });
+     }
+@@ -102,21 +102,38 @@
+     }
+ 
+     private void searchStudent(){
+-        int studentId = Integer.parseInt(txtsearch.getText());
++        String searchInput = txtsearch.getText().trim();
++
+ 
+         List<StudentInfo> studentInfos = studentService.getAllStudents();
+-        for(StudentInfo studentInfo : studentInfos){
+-            if(studentInfo.getStudentId() == studentId){
+-                txtStudentId.setText(String.valueOf(studentInfo.getStudentId()));
+-                txtFullName.setText(studentInfo.getFullName());
+-                txtDate.setText(studentInfo.getDayofBirth());
+-                txtGender.setText(studentInfo.getGender());
+-                txtAddress.setText(studentInfo.getAddress());
+-                txtPhone.setText(studentInfo.getPhone());
+-                txtEmail.setText(studentInfo.getEmail());
+-                break;
+-            }
+-        }
++
++        try{
++            int searchId = Integer.parseInt(searchInput);
++            for(StudentInfo studentInfo : studentInfos){
++                if(studentInfo.getStudentId() == searchId){
++                    getSearch(studentInfo);
++                    break;
++                }
++            }
++        }catch (NumberFormatException e){
++            for(StudentInfo studentInfo : studentInfos){
++                if(studentInfo.getFullName().equalsIgnoreCase(searchInput)){
++                    getSearch(studentInfo);
++                    break;
++                }
++            }
++        }
++
++    }
++
++    private void getSearch(StudentInfo studentInfo){
++        txtStudentId.setText(String.valueOf(studentInfo.getStudentId()));
++        txtFullName.setText(studentInfo.getFullName());
++        txtDate.setText(studentInfo.getDayofBirth());
++        txtGender.setText(studentInfo.getGender());
++        txtAddress.setText(studentInfo.getAddress());
++        txtPhone.setText(studentInfo.getPhone());
++        txtEmail.setText(studentInfo.getEmail());
+     }
+ 
+     private void loadStudentTable(){
+Index: src/service/StudentService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package service;\r\n\r\nimport dao.DataImplement;\r\nimport model.StudentInfo;\r\n\r\nimport java.util.List;\r\n\r\npublic class StudentService {\r\n    private DataImplement dataImplement;\r\n\r\n    public StudentService() {\r\n        this.dataImplement = new DataImplement();\r\n    }\r\n\r\n    public List<StudentInfo> getAllStudents() {\r\n        return dataImplement.getAllStudents();\r\n    }\r\n\r\n    public void addStudent(StudentInfo studentInfo){\r\n        dataImplement.addStudent(studentInfo);\r\n    }\r\n\r\n    public void deleteStudent(int studentId){\r\n        dataImplement.deleteStudent(studentId);\r\n    }\r\n\r\n    public void updateStudent(StudentInfo studentInfo){\r\n        dataImplement.updateStudent(studentInfo);\r\n    }\r\n}\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/service/StudentService.java b/src/service/StudentService.java
+--- a/src/service/StudentService.java	(revision 57b1c1610d36d85f6b193c5c3f38dc730d0d4a6e)
++++ b/src/service/StudentService.java	(date 1717637607462)
+@@ -27,5 +27,7 @@
+     public void updateStudent(StudentInfo studentInfo){
+         dataImplement.updateStudent(studentInfo);
+     }
++
++
+ }
+ 
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"dffd2785-bf2e-48ac-96e9-143c4c59b691\" name=\"Changes\" comment=\"\">\r\n      <change afterPath=\"$PROJECT_DIR$/.gitignore\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/misc.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/modules.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/uiDesigner.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/vcs.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/demo_intern.iml\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/Main.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/config/DataSource.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/dao/DataClose.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/dao/DataImplement.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/demo_intern_GUI.form\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/demo_intern_GUI.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/model/StudentInfo.java\" afterDir=\"false\" />\r\n      <change afterPath=\"$PROJECT_DIR$/src/service/StudentService.java\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Class\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\"><![CDATA[{\r\n  \"associatedIndex\": 5\r\n}]]></component>\r\n  <component name=\"ProjectId\" id=\"2hRTazBlp1FTGDrYoml4eQt57Xd\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\"><![CDATA[{\r\n  \"keyToString\": {\r\n    \"Application.Main.executor\": \"Run\",\r\n    \"Application.demo_intern_GUI.executor\": \"Run\",\r\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\r\n    \"SHARE_PROJECT_CONFIGURATION_FILES\": \"true\",\r\n    \"git-widget-placeholder\": \"main\",\r\n    \"kotlin-language-version-configured\": \"true\",\r\n    \"last_opened_file_path\": \"E:/CSGROUP_Training/connect/mysql-connector-java-6.0.2/mysql-connector-java-6.0.2-bin.jar\",\r\n    \"onboarding.tips.debug.path\": \"E:/CSGROUP_Training/day1/demo_intern/src/Main.java\",\r\n    \"project.structure.last.edited\": \"Modules\",\r\n    \"project.structure.proportion\": \"0.15\",\r\n    \"project.structure.side.proportion\": \"0.2\",\r\n    \"settings.editor.selected.configurable\": \"Errors\"\r\n  }\r\n}]]></component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"dffd2785-bf2e-48ac-96e9-143c4c59b691\" name=\"Changes\" comment=\"\" />\r\n      <created>1717555960866</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1717555960866</updated>\r\n    </task>\r\n    <servers />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 57b1c1610d36d85f6b193c5c3f38dc730d0d4a6e)
++++ b/.idea/workspace.xml	(date 1717642169114)
+@@ -5,21 +5,13 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="dffd2785-bf2e-48ac-96e9-143c4c59b691" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/demo_intern.iml" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/config/DataSource.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/dao/DataClose.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/dao/DataImplement.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/demo_intern_GUI.form" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/demo_intern_GUI.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/model/StudentInfo.java" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/src/service/StudentService.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/src/model/FamilyInfo.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/dao/DataImplement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/dao/DataImplement.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/demo_intern_GUI.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/demo_intern_GUI.form" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/demo_intern_GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/demo_intern_GUI.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/service/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/service/StudentService.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -36,9 +28,9 @@
+   <component name="Git.Settings">
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+-  <component name="ProjectColorInfo"><![CDATA[{
+-  "associatedIndex": 5
+-}]]></component>
++  <component name="ProjectColorInfo">{
++  &quot;associatedIndex&quot;: 5
++}</component>
+   <component name="ProjectId" id="2hRTazBlp1FTGDrYoml4eQt57Xd" />
+   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+   <component name="ProjectViewState">
+@@ -53,7 +45,7 @@
+     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+     "git-widget-placeholder": "main",
+     "kotlin-language-version-configured": "true",
+-    "last_opened_file_path": "E:/CSGROUP_Training/connect/mysql-connector-java-6.0.2/mysql-connector-java-6.0.2-bin.jar",
++    "last_opened_file_path": "E:/CSGROUP_Training/day1/untitled",
+     "onboarding.tips.debug.path": "E:/CSGROUP_Training/day1/demo_intern/src/Main.java",
+     "project.structure.last.edited": "Modules",
+     "project.structure.proportion": "0.15",
+Index: src/demo_intern_GUI.form
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<form xmlns=\"http://www.intellij.com/uidesigner/form/\" version=\"1\" bind-to-class=\"demo_intern_GUI\">\r\n  <grid id=\"27dc6\" binding=\"main\" layout-manager=\"GridLayoutManager\" row-count=\"10\" column-count=\"4\" same-size-horizontally=\"false\" same-size-vertically=\"false\" hgap=\"-1\" vgap=\"-1\">\r\n    <margin top=\"0\" left=\"0\" bottom=\"0\" right=\"0\"/>\r\n    <constraints>\r\n      <xy x=\"20\" y=\"20\" width=\"639\" height=\"581\"/>\r\n    </constraints>\r\n    <properties/>\r\n    <border type=\"none\"/>\r\n    <children>\r\n      <component id=\"1b461\" class=\"javax.swing.JLabel\" binding=\"title\">\r\n        <constraints>\r\n          <grid row=\"0\" column=\"0\" row-span=\"1\" col-span=\"3\" vsize-policy=\"0\" hsize-policy=\"0\" anchor=\"8\" fill=\"0\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <font size=\"22\" style=\"1\"/>\r\n          <text value=\"Student Management\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"a8daf\" class=\"javax.swing.JLabel\">\r\n        <constraints>\r\n          <grid row=\"1\" column=\"0\" row-span=\"1\" col-span=\"2\" vsize-policy=\"0\" hsize-policy=\"0\" anchor=\"8\" fill=\"0\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Student_ID\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"beb1e\" class=\"javax.swing.JLabel\">\r\n        <constraints>\r\n          <grid row=\"2\" column=\"0\" row-span=\"1\" col-span=\"2\" vsize-policy=\"0\" hsize-policy=\"0\" anchor=\"8\" fill=\"0\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"FullName\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"edf64\" class=\"javax.swing.JLabel\">\r\n        <constraints>\r\n          <grid row=\"3\" column=\"0\" row-span=\"1\" col-span=\"2\" vsize-policy=\"0\" hsize-policy=\"0\" anchor=\"8\" fill=\"0\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Date Of Birth\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"8865\" class=\"javax.swing.JLabel\">\r\n        <constraints>\r\n          <grid row=\"4\" column=\"0\" row-span=\"1\" col-span=\"2\" vsize-policy=\"0\" hsize-policy=\"0\" anchor=\"8\" fill=\"0\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Gender\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"b5fe9\" class=\"javax.swing.JLabel\">\r\n        <constraints>\r\n          <grid row=\"5\" column=\"0\" row-span=\"1\" col-span=\"2\" vsize-policy=\"0\" hsize-policy=\"0\" anchor=\"8\" fill=\"0\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Address\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"3a\" class=\"javax.swing.JLabel\">\r\n        <constraints>\r\n          <grid row=\"6\" column=\"0\" row-span=\"1\" col-span=\"2\" vsize-policy=\"0\" hsize-policy=\"0\" anchor=\"8\" fill=\"0\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Phone\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"f9937\" class=\"javax.swing.JLabel\">\r\n        <constraints>\r\n          <grid row=\"7\" column=\"0\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"0\" anchor=\"8\" fill=\"0\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Email\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"f3cb3\" class=\"javax.swing.JTextField\" binding=\"txtFullName\">\r\n        <constraints>\r\n          <grid row=\"2\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"6\" anchor=\"8\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\">\r\n            <preferred-size width=\"150\" height=\"-1\"/>\r\n          </grid>\r\n        </constraints>\r\n        <properties/>\r\n      </component>\r\n      <component id=\"cc268\" class=\"javax.swing.JTextField\" binding=\"txtDate\">\r\n        <constraints>\r\n          <grid row=\"3\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"6\" anchor=\"8\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\">\r\n            <preferred-size width=\"150\" height=\"-1\"/>\r\n          </grid>\r\n        </constraints>\r\n        <properties/>\r\n      </component>\r\n      <component id=\"38fb5\" class=\"javax.swing.JTextField\" binding=\"txtGender\">\r\n        <constraints>\r\n          <grid row=\"4\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"6\" anchor=\"8\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\">\r\n            <preferred-size width=\"150\" height=\"-1\"/>\r\n          </grid>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"c65ed\" class=\"javax.swing.JTextField\" binding=\"txtAddress\">\r\n        <constraints>\r\n          <grid row=\"5\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"6\" anchor=\"8\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\">\r\n            <preferred-size width=\"150\" height=\"-1\"/>\r\n          </grid>\r\n        </constraints>\r\n        <properties/>\r\n      </component>\r\n      <component id=\"eef5b\" class=\"javax.swing.JTextField\" binding=\"txtPhone\">\r\n        <constraints>\r\n          <grid row=\"6\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"6\" anchor=\"8\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\">\r\n            <preferred-size width=\"150\" height=\"-1\"/>\r\n          </grid>\r\n        </constraints>\r\n        <properties/>\r\n      </component>\r\n      <component id=\"88be8\" class=\"javax.swing.JTextField\" binding=\"txtStudentId\">\r\n        <constraints>\r\n          <grid row=\"1\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"6\" anchor=\"8\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\">\r\n            <preferred-size width=\"150\" height=\"-1\"/>\r\n          </grid>\r\n        </constraints>\r\n        <properties/>\r\n      </component>\r\n      <component id=\"17bfa\" class=\"javax.swing.JTextField\" binding=\"txtEmail\">\r\n        <constraints>\r\n          <grid row=\"7\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"6\" anchor=\"8\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\">\r\n            <preferred-size width=\"150\" height=\"-1\"/>\r\n          </grid>\r\n        </constraints>\r\n        <properties/>\r\n      </component>\r\n      <component id=\"31ef2\" class=\"javax.swing.JButton\" binding=\"saveButton\" default-binding=\"true\">\r\n        <constraints>\r\n          <grid row=\"8\" column=\"0\" row-span=\"1\" col-span=\"2\" vsize-policy=\"0\" hsize-policy=\"3\" anchor=\"0\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Save\"/>\r\n        </properties>\r\n      </component>\r\n      <scrollpane id=\"fa3cf\">\r\n        <constraints>\r\n          <grid row=\"1\" column=\"3\" row-span=\"8\" col-span=\"1\" vsize-policy=\"7\" hsize-policy=\"7\" anchor=\"0\" fill=\"3\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties/>\r\n        <border type=\"none\"/>\r\n        <children>\r\n          <component id=\"ab386\" class=\"javax.swing.JTable\" binding=\"table1\" default-binding=\"true\">\r\n            <constraints/>\r\n            <properties/>\r\n          </component>\r\n        </children>\r\n      </scrollpane>\r\n      <component id=\"5ce3c\" class=\"javax.swing.JButton\" binding=\"updateButton\" default-binding=\"true\">\r\n        <constraints>\r\n          <grid row=\"8\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"3\" anchor=\"0\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Update\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"5b25a\" class=\"javax.swing.JButton\" binding=\"deleteButton\" default-binding=\"true\">\r\n        <constraints>\r\n          <grid row=\"9\" column=\"0\" row-span=\"1\" col-span=\"2\" vsize-policy=\"0\" hsize-policy=\"3\" anchor=\"0\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Delete\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"c8aed\" class=\"javax.swing.JButton\" binding=\"searchButton\" default-binding=\"true\">\r\n        <constraints>\r\n          <grid row=\"9\" column=\"2\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"3\" anchor=\"0\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\"/>\r\n        </constraints>\r\n        <properties>\r\n          <text value=\"Search\"/>\r\n        </properties>\r\n      </component>\r\n      <component id=\"3c162\" class=\"javax.swing.JTextField\" binding=\"txtsearch\">\r\n        <constraints>\r\n          <grid row=\"9\" column=\"3\" row-span=\"1\" col-span=\"1\" vsize-policy=\"0\" hsize-policy=\"6\" anchor=\"8\" fill=\"1\" indent=\"0\" use-parent-layout=\"false\">\r\n            <preferred-size width=\"150\" height=\"-1\"/>\r\n          </grid>\r\n        </constraints>\r\n        <properties/>\r\n      </component>\r\n    </children>\r\n  </grid>\r\n</form>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/demo_intern_GUI.form b/src/demo_intern_GUI.form
+--- a/src/demo_intern_GUI.form	(revision 57b1c1610d36d85f6b193c5c3f38dc730d0d4a6e)
++++ b/src/demo_intern_GUI.form	(date 1717637304991)
+@@ -136,12 +136,12 @@
+           <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+         </constraints>
+         <properties>
+-          <text value="Save"/>
++          <text value="Add"/>
+         </properties>
+       </component>
+       <scrollpane id="fa3cf">
+         <constraints>
+-          <grid row="1" column="3" row-span="8" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
++          <grid row="1" column="3" row-span="7" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+         </constraints>
+         <properties/>
+         <border type="none"/>
+@@ -183,6 +183,14 @@
+           </grid>
+         </constraints>
+         <properties/>
++      </component>
++      <component id="8b1b9" class="javax.swing.JLabel">
++        <constraints>
++          <grid row="8" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
++        </constraints>
++        <properties>
++          <text value="Search and Delete"/>
++        </properties>
+       </component>
+     </children>
+   </grid>
+Index: src/model/FamilyInfo.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/model/FamilyInfo.java b/src/model/FamilyInfo.java
+new file mode 100644
+--- /dev/null	(date 1717636542839)
++++ b/src/model/FamilyInfo.java	(date 1717636542839)
+@@ -0,0 +1,63 @@
++package model;
++
++public class FamilyInfo {
++
++    private int familyId;
++    private String fatherName;
++    private String fatherPhone;
++    private String motherName;
++    private String motherPhone;
++
++    public FamilyInfo(){
++
++    }
++
++    public FamilyInfo(int familyId, String fatherName, String fatherPhone, String motherName, String motherPhone) {
++        this.familyId = familyId;
++        this.fatherName = fatherName;
++        this.fatherPhone = fatherPhone;
++        this.motherName = motherName;
++        this.motherPhone = motherPhone;
++    }
++
++    public int getFamilyId() {
++        return familyId;
++    }
++
++    public void setFamilyId(int familyId) {
++        this.familyId = familyId;
++    }
++
++    public String getFatherName() {
++        return fatherName;
++    }
++
++    public void setFatherName(String fatherName) {
++        this.fatherName = fatherName;
++    }
++
++    public String getFatherPhone() {
++        return fatherPhone;
++    }
++
++    public void setFatherPhone(String fatherPhone) {
++        this.fatherPhone = fatherPhone;
++    }
++
++    public String getMotherName() {
++        return motherName;
++    }
++
++    public void setMotherName(String motherName) {
++        this.motherName = motherName;
++    }
++
++    public String getMotherPhone() {
++        return motherPhone;
++    }
++
++    public void setMotherPhone(String motherPhone) {
++        this.motherPhone = motherPhone;
++    }
++
++}

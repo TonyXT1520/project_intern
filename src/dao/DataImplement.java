@@ -12,7 +12,6 @@ public class DataImplement extends DataClose {
     public  List<StudentInfo> getAllStudents(){
         List<StudentInfo> studentInfos = new ArrayList<>();
 
-
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -38,7 +37,7 @@ public class DataImplement extends DataClose {
         }catch (SQLException e) {
             e.printStackTrace();
         }finally {
-            closeCon(connection);
+            //closeCon(connection);
             closePst(preparedStatement);
             closeRs(resultSet);
         }
@@ -71,7 +70,21 @@ public class DataImplement extends DataClose {
         }
         catch(SQLException e) {
             e.printStackTrace();
+        }try{
+            if (connection != null){
+                connection.close();
+            }
+            if(preparedStatement != null){
+                preparedStatement.close();
+            }
+            if(resultSet != null){
+                resultSet.close();
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
         }
+
     }
 
     public void deleteStudent(int studentId){
@@ -94,6 +107,10 @@ public class DataImplement extends DataClose {
             }
         }catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            closeCon(connection);
+            closePst(preparedStatement);
+            closeRs(resultSet);
         }
     }
 
@@ -122,7 +139,21 @@ public class DataImplement extends DataClose {
             }
         }catch (SQLException e){
             e.printStackTrace();
+        }try{
+            if (connection != null){
+                connection.close();
+            }
+            if(preparedStatement != null){
+                preparedStatement.close();
+            }
+            if(resultSet != null){
+                resultSet.close();
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
         }
+
     }
 
 }

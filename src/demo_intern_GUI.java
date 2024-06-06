@@ -63,7 +63,7 @@ public class demo_intern_GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 searchStudent();
-
+                loadStudentTable();
             }
         });
     }
@@ -102,21 +102,38 @@ public class demo_intern_GUI {
     }
 
     private void searchStudent(){
-        int studentId = Integer.parseInt(txtsearch.getText());
+        String searchInput = txtsearch.getText().trim();
+
 
         List<StudentInfo> studentInfos = studentService.getAllStudents();
-        for(StudentInfo studentInfo : studentInfos){
-            if(studentInfo.getStudentId() == studentId){
-                txtStudentId.setText(String.valueOf(studentInfo.getStudentId()));
-                txtFullName.setText(studentInfo.getFullName());
-                txtDate.setText(studentInfo.getDayofBirth());
-                txtGender.setText(studentInfo.getGender());
-                txtAddress.setText(studentInfo.getAddress());
-                txtPhone.setText(studentInfo.getPhone());
-                txtEmail.setText(studentInfo.getEmail());
-                break;
+
+        try{
+            int searchId = Integer.parseInt(searchInput);
+            for(StudentInfo studentInfo : studentInfos){
+                if(studentInfo.getStudentId() == searchId){
+                    getSearch(studentInfo);
+                    break;
+                }
+            }
+        }catch (NumberFormatException e){
+            for(StudentInfo studentInfo : studentInfos){
+                if(studentInfo.getFullName().equalsIgnoreCase(searchInput)){
+                    getSearch(studentInfo);
+                    break;
+                }
             }
         }
+
+    }
+
+    private void getSearch(StudentInfo studentInfo){
+        txtStudentId.setText(String.valueOf(studentInfo.getStudentId()));
+        txtFullName.setText(studentInfo.getFullName());
+        txtDate.setText(studentInfo.getDayofBirth());
+        txtGender.setText(studentInfo.getGender());
+        txtAddress.setText(studentInfo.getAddress());
+        txtPhone.setText(studentInfo.getPhone());
+        txtEmail.setText(studentInfo.getEmail());
     }
 
     private void loadStudentTable(){
